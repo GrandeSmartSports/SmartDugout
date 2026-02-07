@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Softball Eval">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥎</text></svg>">
+<title>🥎 Softball Eval</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --pri: #2d3a8c; --pri-dk: #1a2460; --pri-lt: #e8ecff;
+    --accent: #ff6b3d; --accent-dk: #e5522a; --accent-lt: #fff0eb;
+    --ok: #10b981; --ok-lt: #d1fae5;
+    --warn: #f59e0b; --warn-lt: #fef3c7;
+    --bad: #ef4444; --bad-lt: #fee2e2;
+    --g50: #fafbfc; --g100: #f1f5f9; --g200: #e2e8f0; --g300: #cbd5e1;
+    --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
+    --g800: #1e293b;
+    --rad: 16px; --rad-sm: 12px; --rad-xs: 8px;
+    --nav-h: 64px;
+    --score-1: #ef4444; --score-2: #f97316; --score-3: #eab308; --score-4: #22c55e; --score-5: #059669;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
+    --shadow-xl: 0 8px 30px rgba(0,0,0,0.12);
+  }
+
+  html { height: 100%; overflow: hidden; }
+  body {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(180deg, #f0f4ff 0%, #f8fafc 50%, #fef7f4 100%);
+    color: var(--g800);
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .app { display: flex; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
+
+  /* HEADER */
+  .hdr {
+    background: linear-gradient(135deg, var(--pri) 0%, #4f46e5 100%);
+    color: white;
+    padding: 14px 20px; padding-top: max(14px, env(safe-area-inset-top));
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(45,58,140,0.3);
+  }
+  .hdr-left { display: flex; align-items: center; gap: 10px; }
+  .hdr h1 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+  .hdr .sub { font-size: 12px; opacity: 0.85; font-weight: 500; }
+
+  /* SCROLLABLE CONTENT */
+  .content {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: 24px;
+  }
+
+  /* BOTTOM NAV */
+  .nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex; z-index: 9000;
+    padding-bottom: env(safe-area-inset-bottom);
+    height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+    max-width: 600px; margin: 0 auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  }
+  .nav button {
+    flex: 1; padding: 8px 2px 6px; border: none; background: none;
+    font-size: 11px; font-weight: 600; color: var(--g400); display: flex; flex-direction: column;
+    align-items: center; gap: 4px; cursor: pointer;
+    -webkit-appearance: none; touch-action: manipulation;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .nav button.on { color: var(--pri); font-weight: 800; }
+  .nav button.on::after {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 28px; height: 3px; background: var(--accent); border-radius: 0 0 4px 4px;
+  }
+  .nav .ico { font-size: 26px; }
+
+  /* PAGES */
+  .pg { display: none; flex-direction: column; height: 100%; }
+  .pg.on { display: flex; }
+
+  /* CARD */
+  .card {
+    background: white; border-radius: var(--rad);
+    margin: 8px 12px; padding: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
+  }
+  .card-t {
+    font-size: 11px; font-weight: 800; color: var(--pri);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-t::before {
+    content: ''; display: block; width: 3px; height: 14px;
+    background: linear-gradient(180deg, var(--accent), var(--pri));
+    border-radius: 2px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 24px; border-radius: var(--rad-sm); border: none;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    -webkit-appearance: none; touch-action: manipulation;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-p { background: linear-gradient(135deg, var(--accent), #ff8a65); color: white; }
+  .btn-p:active { background: var(--accent-dk); }
+  .btn-ok { background: linear-gradient(135deg, var(--ok), #34d399); color: white; }
+  .btn-bad { background: linear-gradient(135deg, var(--bad), #f87171); color: white; }
+  .btn-out { background: white; color: var(--g700); border: 2px solid var(--g200); }
+  .btn-out:active { background: var(--g50); border-color: var(--g300); }
+  .btn-full { width: 100%; }
+  .btn-sm { padding: 10px 16px; font-size: 13px; border-radius: var(--rad-xs); }
+
+  /* INPUTS */
+  input, textarea, select {
+    font-size: 16px !important; -webkit-appearance: none;
+    border-radius: var(--rad-sm); border: 2px solid var(--g200);
+    padding: 12px 16px; font-family: inherit; width: 100%;
+    background: var(--g50); touch-action: manipulation;
+    transition: all 0.2s ease;
+  }
+  input:focus, textarea:focus {
+    outline: none; border-color: var(--pri);
+    box-shadow: 0 0 0 4px rgba(45,58,140,0.12);
+    background: white;
+  }
+  textarea { min-height: 70px; resize: vertical; }
+
+  /* PLAYER LOOKUP — BIG */
+  .lookup { display: flex; gap: 10px; padding: 14px 12px 8px; }
+  .lookup input {
+    flex: 1; text-align: center; font-weight: 900; font-size: 32px !important;
+    padding: 18px; border-radius: var(--rad); border: 3px solid var(--g200);
+    letter-spacing: 4px; background: white;
+    box-shadow: var(--shadow);
+  }
+  .lookup input:focus { border-color: var(--pri); box-shadow: var(--shadow-lg), 0 0 0 4px rgba(45,58,140,0.1); }
+  .lookup .btn {
+    padding: 18px 36px; font-size: 22px; font-weight: 900;
+    border-radius: var(--rad); letter-spacing: 1px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* STATUS */
+  .status {
+    margin: 4px 12px; padding: 10px 16px; border-radius: var(--rad-sm);
+    font-size: 14px; font-weight: 700; text-align: center;
+    transition: all 0.3s ease;
+  }
+  .st-new { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+  .st-edit { background: linear-gradient(135deg, var(--pri-lt), #c7d2fe); color: var(--pri-dk); }
+  .st-saved { background: linear-gradient(135deg, var(--ok-lt), #a7f3d0); color: #065f46; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; top: max(20px, env(safe-area-inset-top));
+    left: 50%; transform: translateX(-50%) translateY(-100px);
+    background: var(--g800); color: white; padding: 14px 28px;
+    border-radius: 50px; font-size: 15px; font-weight: 700;
+    z-index: 9999; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;
+    box-shadow: var(--shadow-xl);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ========== COMPACT RATING GRID ========== */
+  .rating-grid { display: flex; flex-direction: column; gap: 0; }
+
+  .rg-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--g100);
+    transition: background 0.15s ease;
+  }
+  .rg-row:last-child { border-bottom: none; }
+  .rg-row:active { background: var(--g50); }
+
+  .rg-label {
+    width: 76px; flex-shrink: 0;
+    font-size: 12px; font-weight: 700; color: var(--g700);
+    line-height: 1.2;
+  }
+  .rg-label .rg-wt { font-size: 10px; font-weight: 600; color: var(--g400); margin-top: 1px; }
+
+  .rg-help {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--g200); background: white;
+    font-size: 12px; font-weight: 900; color: var(--g400);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0;
+    -webkit-appearance: none; touch-action: manipulation;
+    transition: all 0.15s ease;
+  }
+  .rg-help:active { background: var(--pri-lt); border-color: var(--pri); color: var(--pri); }
+
+  .rg-btns {
+    display: flex; gap: 5px; flex: 1; justify-content: flex-end;
+  }
+  .rg-btn {
+    width: 42px; height: 42px; border: 2px solid var(--g200);
+    border-radius: var(--rad-sm); background: white; font-size: 17px;
+    font-weight: 800; cursor: pointer; text-align: center;
+    touch-action: manipulation; -webkit-appearance: none;
+    transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm);
+    color: var(--g500);
+  }
+  .rg-btn:active { transform: scale(0.9); }
+
+  /* Color-coded selected states */
+  .rg-btn.sel-1 { background: var(--score-1); color: white; border-color: var(--score-1); transform: scale(1.1); box-shadow: 0 3px 12px rgba(239,68,68,0.35); }
+  .rg-btn.sel-2 { background: var(--score-2); color: white; border-color: var(--score-2); transform: scale(1.1); box-shadow: 0 3px 12px rgba(249,115,22,0.35); }
+  .rg-btn.sel-3 { background: var(--score-3); color: #713f12; border-color: var(--score-3); transform: scale(1.1); box-shadow: 0 3px 12px rgba(234,179,8,0.35); }
+  .rg-btn.sel-4 { background: var(--score-4); color: white; border-color: var(--score-4); transform: scale(1.1); box-shadow: 0 3px 12px rgba(34,197,94,0.35); }
+  .rg-btn.sel-5 { background: var(--score-5); color: white; border-color: var(--score-5); transform: scale(1.1); box-shadow: 0 3px 12px rgba(5,150,105,0.35); }
+
+  .rg-btn.na-btn { font-size: 9px; font-weight: 700; color: var(--g400); width: 38px; }
+  .rg-btn.na-btn.sel-na { background: var(--warn); color: white; border-color: var(--warn); transform: scale(1.1); box-shadow: 0 3px 12px rgba(245,158,11,0.35); }
+
+  /* Guide popup */
+  .guide-popup {
+    display: none;
+    background: white; border-radius: var(--rad-sm); padding: 14px 16px;
+    margin: 4px 0 8px; font-size: 13px; line-height: 1.6; color: var(--g600);
+    border: 2px solid var(--pri-lt);
+    box-shadow: var(--shadow);
+    animation: slideDown 0.2s ease;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .guide-popup.show { display: block; }
+  .guide-t { font-weight: 800; color: var(--pri); margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .gr { display: flex; gap: 8px; margin: 4px 0; align-items: flex-start; }
+  .gr-n {
+    font-weight: 900; color: white; min-width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; font-size: 12px; flex-shrink: 0;
+    background: var(--pri);
+  }
+
+  /* INLINE TOGGLES */
+  .inline-toggles {
+    display: flex; gap: 8px; padding: 10px 0 4px;
+    border-bottom: 1px solid var(--g100);
+  }
+  .tog {
+    flex: 1; padding: 12px 8px; border: 2px solid var(--g200);
+    border-radius: var(--rad-sm); background: white; font-size: 14px;
+    font-weight: 700; cursor: pointer; text-align: center;
+    touch-action: manipulation; -webkit-appearance: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .tog:active { transform: scale(0.96); }
+  .tog.on-p { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; border-color: var(--bad); box-shadow: 0 3px 12px rgba(239,68,68,0.2); }
+  .tog.on-c { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); color: #3730a3; border-color: #6366f1; box-shadow: 0 3px 12px rgba(99,102,241,0.2); }
+
+  /* COLLAPSED NOTES */
+  .notes-toggle { padding: 10px 0; text-align: center; }
+  .notes-toggle button {
+    background: none; border: 2px dashed var(--g200); border-radius: var(--rad-sm);
+    padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--g400);
+    cursor: pointer; width: 100%;
+    -webkit-appearance: none; touch-action: manipulation;
+    transition: all 0.2s ease;
+  }
+  .notes-toggle button:active { background: var(--g50); border-color: var(--g300); }
+  .notes-wrap { display: none; padding: 8px 0; animation: slideDown 0.2s ease; }
+  .notes-wrap.show { display: block; }
+
+  /* SAVE + NEXT */
+  .save-area { padding: 8px 12px; }
+  .save-btn-big {
+    width: 100%; padding: 20px; border: none; border-radius: var(--rad);
+    background: linear-gradient(135deg, var(--ok), #34d399);
+    color: white; font-size: 18px; font-weight: 900;
+    cursor: pointer; -webkit-appearance: none; touch-action: manipulation;
+    transition: all 0.15s ease;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.35);
+  }
+  .save-btn-big:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(16,185,129,0.3); }
+
+  .next-player-bar {
+    display: none; padding: 8px 12px;
+    animation: slideDown 0.3s ease;
+  }
+  .next-player-bar.show { display: block; }
+  .next-btn {
+    width: 100%; padding: 18px; border: none; border-radius: var(--rad);
+    background: linear-gradient(135deg, var(--accent), #ff8a65);
+    color: white; font-size: 18px; font-weight: 900;
+    cursor: pointer; -webkit-appearance: none; touch-action: manipulation;
+    box-shadow: 0 4px 16px rgba(255,107,61,0.35);
+    animation: pulseNext 2s ease-in-out infinite;
+    letter-spacing: 0.3px;
+  }
+  .next-btn:active { transform: scale(0.97); }
+  @keyframes pulseNext {
+    0%, 100% { box-shadow: 0 4px 16px rgba(255,107,61,0.35); }
+    50% { box-shadow: 0 4px 24px rgba(255,107,61,0.5), 0 0 0 6px rgba(255,107,61,0.1); }
+  }
+
+  .del-area { padding: 4px 12px 0; }
+  .del-btn {
+    width: 100%; padding: 12px; border: none; border-radius: var(--rad-xs);
+    background: none; color: var(--g400); font-size: 12px; font-weight: 600;
+    cursor: pointer; -webkit-appearance: none; touch-action: manipulation;
+    transition: color 0.15s;
+  }
+  .del-btn:active { color: var(--bad); }
+
+  /* INSIGHT */
+  .ins {
+    margin: 6px 12px; padding: 12px 14px; border-radius: var(--rad-sm);
+    font-size: 13px; line-height: 1.6; display: flex; gap: 10px;
+    box-shadow: var(--shadow-sm);
+    animation: slideDown 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .ins .ii { font-size: 20px; flex-shrink: 0; }
+  .ins-tip { background: linear-gradient(135deg, #eff6ff, #dbeafe); color: #1e40af; }
+  .ins-warn { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
+  .ins-good { background: linear-gradient(135deg, var(--ok-lt), #a7f3d0); color: #065f46; }
+  .ins-info { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #5b21b6; }
+  .ins-fire { background: linear-gradient(135deg, #fff1f0, #fecaca); color: #c0392b; }
+
+  /* PLAYER LIST */
+  .pli {
+    padding: 14px 4px; border-bottom: 1px solid var(--g100);
+    cursor: pointer; touch-action: manipulation;
+    transition: background 0.15s ease;
+    border-radius: var(--rad-xs);
+  }
+  .pli:active { background: var(--g50); }
+  .pli:last-child { border-bottom: none; }
+  .pli-top { display: flex; align-items: center; gap: 12px; }
+  .pnum {
+    width: 44px; height: 44px; border-radius: var(--rad-sm);
+    background: linear-gradient(135deg, var(--pri), #4f46e5);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+  .pnum.mine { background: linear-gradient(135deg, var(--ok), #34d399); }
+  .pnum.taken { background: linear-gradient(135deg, var(--g400), var(--g500)); }
+  .pli-info { flex: 1; min-width: 0; }
+  .pli-name { font-weight: 700; font-size: 15px; color: var(--g800); }
+  .pli-score {
+    font-size: 22px; font-weight: 900; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), #ff8a65);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .pli-score.na { -webkit-text-fill-color: var(--g300); font-size: 14px; font-weight: 600; }
+
+  .pli-cats {
+    display: flex; gap: 4px; margin-top: 8px; margin-left: 56px;
+    flex-wrap: wrap;
+  }
+  .cat-pip {
+    font-size: 11px; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .pip-ok { background: var(--g100); color: var(--g600); }
+  .pip-miss { background: var(--bad-lt); color: var(--bad); }
+  .pip-na { background: var(--warn-lt); color: #92400e; }
+
+  .pli-badges { display: flex; gap: 4px; margin-top: 6px; margin-left: 56px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px; padding: 3px 8px; border-radius: 6px; font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .b-p { background: var(--bad-lt); color: #991b1b; }
+  .b-c { background: #e0e7ff; color: #3730a3; }
+  .b-mine { background: var(--ok-lt); color: #065f46; }
+  .b-taken { background: var(--g200); color: var(--g600); }
+  .b-conf { padding: 3px 10px; }
+  .conf-hi { background: var(--ok-lt); color: #065f46; }
+  .conf-md { background: var(--warn-lt); color: #92400e; }
+  .conf-lo { background: var(--bad-lt); color: #991b1b; }
+
+  /* CHIPS */
+  .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 12px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    padding: 8px 14px; border-radius: 50px; border: 2px solid var(--g200);
+    background: white; font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; touch-action: manipulation;
+    -webkit-appearance: none;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .chip:active { transform: scale(0.95); }
+  .chip.on {
+    background: linear-gradient(135deg, var(--pri), #4f46e5);
+    color: white; border-color: var(--pri);
+    box-shadow: 0 3px 12px rgba(45,58,140,0.25);
+  }
+
+  .sec-lbl {
+    padding: 10px 0 6px; font-size: 11px; font-weight: 800;
+    color: var(--g400); text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  .range-bar {
+    height: 6px; background: var(--g200); border-radius: 3px;
+    margin: 4px 56px 0; position: relative; overflow: visible;
+  }
+  .range-fill {
+    position: absolute; height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), #ff8a65);
+  }
+  .range-txt {
+    font-size: 10px; color: var(--g400); margin-left: 56px; margin-top: 2px;
+  }
+
+  /* SETTINGS */
+  .dpos-row { display: flex; gap: 6px; }
+  .dpos {
+    flex: 1; padding: 14px; border: 2px solid var(--g200);
+    border-radius: var(--rad-sm); background: white; font-size: 16px;
+    font-weight: 700; cursor: pointer; text-align: center;
+    touch-action: manipulation; -webkit-appearance: none;
+    transition: all 0.2s ease;
+  }
+  .dpos:active { transform: scale(0.95); }
+  .dpos.sel { background: linear-gradient(135deg, var(--accent), #ff8a65); color: white; border-color: var(--accent); }
+
+  .adj-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 2px solid var(--g200); background: white;
+    font-size: 18px; font-weight: 700; cursor: pointer;
+    touch-action: manipulation; display: flex;
+    align-items: center; justify-content: center;
+    -webkit-appearance: none;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+  }
+  .adj-btn:active { background: var(--g100); transform: scale(0.9); }
+
+  .empty { text-align: center; padding: 40px 24px; color: var(--g400); }
+  .empty .emo { font-size: 48px; margin-bottom: 12px; }
+
+  .unavail { opacity: 0.45; }
+
+  /* MODAL */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    z-index: 5000;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: white; border-radius: var(--rad); padding: 24px;
+    max-width: 380px; width: 100%; max-height: 80vh; overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal h3 { margin-bottom: 10px; }
+  .modal p { color: var(--g500); font-size: 14px; margin-bottom: 14px; }
+
+  /* Name row under status */
+  .name-row { padding: 0 12px 4px; }
+  .name-row input { font-size: 14px !important; padding: 10px 14px; }
+
+  .act-btn {
+    padding: 6px 12px; border-radius: var(--rad-xs); border: none;
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    touch-action: manipulation; -webkit-appearance: none;
+    transition: all 0.15s ease;
+  }
+  .act-btn:active { transform: scale(0.9); }
+  .a-rm { background: var(--bad-lt); color: var(--bad); }
+
+  /* Eval empty state */
+  .eval-hero {
+    text-align: center; padding: 30px 20px 20px;
+  }
+  .eval-hero .emo { font-size: 56px; margin-bottom: 16px; }
+  .eval-hero p { font-size: 15px; font-weight: 600; color: var(--g600); }
+  .eval-hero .sub-text { font-size: 13px; color: var(--g400); margin-top: 8px; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modal"><div class="modal" id="modal-body"></div></div>
+<div class="app">
+<!-- ========== EVALUATE PAGE ========== -->
+<div class="pg on" id="pg-eval">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>🥎 Evaluate</h1>
+    </div>
+  </div>
+  <div class="content" id="eval-scroll">
+    <div class="lookup">
+      <input type="number" id="inp-num" placeholder="#" inputmode="numeric" autocomplete="off">
+      <button class="btn btn-p" id="btn-go" type="button">GO</button>
+    </div>
+    <div id="eval-st" style="display:none" class="status"></div>
+    <div class="name-row" style="display:none" id="name-row">
+      <input type="text" id="inp-name" placeholder="Player name (optional)" autocomplete="off">
+    </div>
+    <div id="smart-tip" style="display:none"></div>
+    <div id="eval-form" style="display:none">
+      <div class="card" style="padding-bottom:8px">
+        <div class="card-t">Skills Assessment</div>
+        <div id="rats-wrap" class="rating-grid"></div>
+        <div class="inline-toggles">
+          <button class="tog" id="tog-p" type="button">🔴 Pitcher</button>
+          <button class="tog" id="tog-c" type="button">🔵 Catcher</button>
+        </div>
+        <div class="notes-toggle" id="notes-toggle">
+          <button type="button" id="btn-add-note">📝 Add Note</button>
+        </div>
+        <div class="notes-wrap" id="notes-wrap">
+          <textarea id="inp-notes" placeholder="Anything standout - attitude, hustle, moments..."></textarea>
+        </div>
+      </div>
+      <div class="save-area">
+        <button class="save-btn-big" id="btn-save" type="button">Save Evaluation</button>
+      </div>
+      <div class="next-player-bar" id="next-bar">
+        <button class="next-btn" id="btn-next" type="button">Next Player →</button>
+      </div>
+      <div class="del-area">
+        <button class="del-btn" id="btn-del" type="button">Delete This Player</button>
+      </div>
+    </div>
+    <div id="eval-empty" class="card">
+      <div class="eval-hero">
+        <div class="emo">🥎</div>
+        <p>Enter a jersey number to start!</p>
+        <div class="sub-text">Type number → GO → Grade skills → Save</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PLAYERS PAGE ========== -->
+<div class="pg" id="pg-players">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h1>📋 Players</h1>
+    </div>
+  </div>
+  <div class="content">
+    <div id="cal-ins" style="display:none"></div>
+    <div class="card">
+      <div class="card-t">Sort</div>
+      <div class="chips" id="sort-ch"></div>
+      <div class="card-t" style="margin-top:4px">Filter</div>
+      <div class="chips" id="filt-ch"></div>
+      <div id="plist"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS PAGE ========== -->
+<div class="pg" id="pg-set">
+  <div class="hdr"><div class="hdr-left"><h1>⚙️ Settings</h1></div></div>
+  <div class="content">
+    <div class="card">
+      <div class="card-t">Pre-Assigned Players</div>
+      <p style="font-size:13px;color:var(--g500);margin-bottom:12px">Your daughter, coach's kids. Auto-added to your team.</p>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <input type="number" id="pre-num" placeholder="#" inputmode="numeric" style="width:70px;text-align:center">
+        <input type="text" id="pre-name" placeholder="Name" style="flex:1">
+        <button class="btn btn-p btn-sm" id="btn-pre" type="button">Add</button>
+      </div>
+      <div id="pre-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-t">Category Weights</div>
+      <p style="font-size:12px;color:var(--g500);margin-bottom:12px">How much each skill counts. Total should = 100%.</p>
+      <div id="wt-ctrl"></div>
+    </div>
+    <div class="card">
+      <div class="card-t">Data</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-out btn-sm" id="btn-exp" type="button">📤 Export</button>
+        <button class="btn btn-out btn-sm" id="btn-imp-t" type="button">📥 Import</button>
+        <input type="file" id="f-imp" accept=".json" style="display:none">
+        <button class="btn btn-bad btn-sm" id="btn-clr" type="button">🗑️ Clear All</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-t">Tips</div>
+      <div style="font-size:13px;color:var(--g500);line-height:1.8">
+        📱 Share → "Add to Home Screen" for app feel<br>
+        📶 Works offline once loaded<br>
+        🔄 Update players between tryout sessions<br>
+        📊 Smart insights appear as you evaluate
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <button data-pg="eval" type="button" class="on"><span class="ico">📝</span>Evaluate</button>
+  <button data-pg="players" type="button"><span class="ico">📋</span>Players</button>
+  <button data-pg="set" type="button"><span class="ico">⚙️</span>Settings</button>
+</nav>
+</div>
+<script>
+// ============ CATEGORIES ============
+const CATS=[
+{key:'throwing',label:'Throwing',sub:'Arm strength + accuracy',dw:15,guide:{
+title:'What to Watch',
+tip:'Watch their natural throw. Focus on whether the ball gets there with zip.',
+g:[
+{n:1,d:'Can\'t reach base. Lobs or pushes the ball.'},
+{n:2,d:'Weak arm, inaccurate more than not.'},
+{n:3,d:'Average throw for age. Reaches bases with reasonable accuracy.'},
+{n:4,d:'Good arm — velocity, hits cutoff/base consistently.'},
+{n:5,d:'Standout arm. Accurate AND strong. Makes you say wow.'}
+]}},
+{key:'fielding',label:'Fielding',sub:'Ground balls + fly balls',dw:15,guide:{
+title:'What to Watch',
+tip:'Watch feet and hands. Does she move TO the ball or wait? Gets low on grounders?',
+g:[
+{n:1,d:'Afraid of ball. Turns away, won\'t get in front.'},
+{n:2,d:'Tries but misses most. Stiff, doesn\'t move feet.'},
+{n:3,d:'Fields routine plays more often than not.'},
+{n:4,d:'Solid hands, good range. Gets in front, tracks fly balls.'},
+{n:5,d:'Makes hard plays look easy. Quick reactions, great range.'}
+]}},
+{key:'hitting',label:'Hitting',sub:'Swing + contact',dw:25,guide:{
+title:'MOST IMPORTANT at 11U',
+tip:'Power means nothing at this age. Does she SWING or stick the bat out? Does she make CONTACT?',
+g:[
+{n:1,d:'Won\'t swing or wild swings missing everything.'},
+{n:2,d:'Makes contact sometimes. Bat slow, lots of whiffs.'},
+{n:3,d:'Makes regular contact. Puts ball in play. Decent swing.'},
+{n:4,d:'Good bat speed, consistent contact. Drives the ball.'},
+{n:5,d:'Best hitter on field. Hard contact, uses whole field.'}
+]}},
+{key:'speed',label:'Speed',sub:'Quickness + baserunning',dw:15,guide:{
+title:'What to Watch',
+tip:'Speed wins games at 11U. Also watch: does she know WHEN to run?',
+g:[
+{n:1,d:'Slowest group. Jogs, doesn\'t hustle.'},
+{n:2,d:'Below average. Runs but no urgency.'},
+{n:3,d:'Average speed. Runs hard to first.'},
+{n:4,d:'Quick — noticeably faster. Smart on bases.'},
+{n:5,d:'Burner. Fastest at tryouts. Creates chaos for defense.'}
+]}},
+{key:'attitude',label:'Attitude',sub:'Hustle + coachability',dw:20,guide:{
+title:'YOU SPEND A SEASON WITH HER',
+tip:'Watch BETWEEN reps. Paying attention? Encouraging teammates? How does she react to mistakes?',
+g:[
+{n:1,d:'Disruptive, won\'t listen, doesn\'t want to be here.'},
+{n:2,d:'Checked out, not engaged.'},
+{n:3,d:'Listens, does what\'s asked. Average effort.'},
+{n:4,d:'Good energy, hustles. Takes coaching. Positive teammate.'},
+{n:5,d:'Leader. First one moving, encourages others. Hungry.'}
+]}},
+{key:'softball_iq',label:'Softball IQ',sub:'Game sense',dw:10,guide:{
+title:'What to Watch',
+tip:'Hard to see at tryouts. Does she know where to throw? Back up plays?',
+g:[
+{n:1,d:'Brand new. Doesn\'t know positions or rules.'},
+{n:2,d:'Some experience but confused. Wrong base.'},
+{n:3,d:'Knows basics. Gets to position, knows force plays.'},
+{n:4,d:'Good instincts. Knows cutoffs, backs up, anticipates.'},
+{n:5,d:'Coach on field. Talks, directs teammates, always right spot.'}
+]}}
+];
+
+// ============ STATE ============
+let S={players:{},pre:[],dpos:0,weights:{},cur:null,sort:'score',filt:'all',dsort:'score',dfilt:'all'};
+
+function save(){try{localStorage.setItem('sdb3',JSON.stringify(S))}catch(e){}}
+function load(){
+try{const d=localStorage.getItem('sdb3');if(d)S={...S,...JSON.parse(d)}}catch(e){}
+if(!S.weights||!Object.keys(S.weights).length){S.weights={};CATS.forEach(c=>S.weights[c.key]=c.dw)}
+}
+
+// ============ UTILS ============
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+function calcScore(p){
+if(!p||!p.ratings)return 0;
+let ws=0,wu=0;
+CATS.forEach(c=>{
+const r=p.ratings[c.key];
+if(r&&r>0){ws+=r*(S.weights[c.key]||0);wu+=(S.weights[c.key]||0)}
+});
+return wu>0?ws/wu:0;
+}
+
+function calcConfidence(p){
+if(!p||!p.ratings)return{pct:0,graded:0,total:CATS.length,missWeight:100,missing:[],naList:[]};
+let graded=0,naCount=0,missWeight=0;
+const missing=[],naList=[];
+CATS.forEach(c=>{
+const r=p.ratings[c.key];
+if(r&&r>0)graded++;
+else if(r===-1){naCount++;naList.push(c.label)}
+else{missWeight+=(S.weights[c.key]||0);missing.push(c.label)}
+});
+const totalW=Object.values(S.weights).reduce((a,b)=>a+b,0);
+const pct=totalW>0?Math.round(((totalW-missWeight)/totalW)*100):0;
+return{pct,graded,total:CATS.length,missWeight,missing,naList,naCount};
+}
+
+function calcRange(p){
+const sc=calcScore(p);
+if(sc<=0)return{low:0,high:0,score:0};
+const conf=calcConfidence(p);
+if(conf.missing.length===0)return{low:sc,high:sc,score:sc};
+let wsLow=0,wuLow=0;
+CATS.forEach(c=>{
+const r=p.ratings[c.key];
+const w=S.weights[c.key]||0;
+if(r&&r>0){wsLow+=r*w;wuLow+=w}
+else if(r!==-1){wsLow+=1*w;wuLow+=w}
+});
+const low=wuLow>0?wsLow/wuLow:0;
+return{low:Math.round(low*10)/10,high:Math.round(sc*10)/10,score:sc};
+}
+
+function tier(sc){
+if(sc>=4.3)return{n:1,l:'Elite',c:'conf-hi'};
+if(sc>=3.5)return{n:2,l:'Above Avg',c:'conf-hi'};
+if(sc>=2.5)return{n:3,l:'Average',c:'conf-md'};
+if(sc>=1.5)return{n:4,l:'Below Avg',c:'conf-lo'};
+return{n:5,l:'Project',c:'conf-lo'};
+}
+
+function myTeam(){return Object.values(S.players).filter(p=>p.myTeam)}
+
+function sortList(list,key){
+return[...list].sort((a,b)=>{
+if(key==='score')return calcScore(b)-calcScore(a);
+if(key==='number')return(parseInt(a.number)||0)-(parseInt(b.number)||0);
+if(key==='name')return(a.name||'').localeCompare(b.name||'');
+if(key==='missing'){return calcConfidence(a).missing.length>calcConfidence(b).missing.length?-1:1}
+if(key==='confidence')return calcConfidence(b).pct-calcConfidence(a).pct;
+return(b.ratings?.[key]||0)-(a.ratings?.[key]||0);
+});
+}
+
+function filtList(list,f){
+if(f==='pitcher')return list.filter(p=>p.pitcher);
+if(f==='catcher')return list.filter(p=>p.catcher);
+if(f==='available')return list.filter(p=>!p.drafted);
+if(f==='drafted')return list.filter(p=>p.drafted);
+if(f==='incomplete')return list.filter(p=>calcConfidence(p).missing.length>0);
+return list;
+}
+
+// ============ NAVIGATION ============
+function showPg(name){
+document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+document.getElementById('pg-'+name).classList.add('on');
+document.querySelector(`[data-pg="${name}"]`).classList.add('on');
+if(name==='players')renderPlayers();
+if(name==='set')renderSettings();
+}
+
+// ============ EVAL PAGE ============
+function buildForm(){
+const w=document.getElementById('rats-wrap');
+w.innerHTML='';
+CATS.forEach(cat=>{
+const guideDiv=document.createElement('div');
+guideDiv.className='guide-popup';
+guideDiv.id='guide-'+cat.key;
+guideDiv.innerHTML=`
+<div class="guide-t">${cat.guide.title}</div>
+<p style="margin-bottom:6px;font-size:12px;color:var(--g500)">${cat.guide.tip}</p>
+${cat.guide.g.map(g=>`<div class="gr"><span class="gr-n">${g.n}</span><span>${g.d}</span></div>`).join('')}`;
+w.appendChild(guideDiv);
+
+const row=document.createElement('div');
+row.className='rg-row';
+row.innerHTML=`
+<div class="rg-label">${cat.label}<div class="rg-wt">${S.weights[cat.key]||cat.dw}%</div></div>
+<button class="rg-help" type="button" data-guide="${cat.key}">?</button>
+<div class="rg-btns" data-ck="${cat.key}">
+${[1,2,3,4,5].map(n=>`<button class="rg-btn" data-ck="${cat.key}" data-v="${n}" type="button">${n}</button>`).join('')}
+<button class="rg-btn na-btn" data-ck="${cat.key}" data-v="-1" type="button">N/A</button>
+</div>`;
+w.appendChild(row);
+});
+
+w.querySelectorAll('.rg-help').forEach(h=>{
+h.addEventListener('click',function(e){
+e.stopPropagation();
+const gk=this.dataset.guide;
+const popup=document.getElementById('guide-'+gk);
+popup.classList.toggle('show');
+w.querySelectorAll('.guide-popup').forEach(g=>{if(g.id!=='guide-'+gk)g.classList.remove('show')});
+});
+});
+
+w.querySelectorAll('.rg-btn').forEach(btn=>{
+btn.addEventListener('click',function(e){
+e.stopPropagation();
+const ck=this.dataset.ck,v=parseInt(this.dataset.v);
+this.parentElement.querySelectorAll('.rg-btn').forEach(b=>{
+b.className='rg-btn'+(b.classList.contains('na-btn')?' na-btn':'');
+});
+if(v===-1) this.classList.add('sel-na');
+else this.classList.add('sel-'+v);
+const gp=document.getElementById('guide-'+ck);
+if(gp)gp.classList.remove('show');
+});
+});
+}
+
+function loadPlayer(){
+const num=document.getElementById('inp-num').value.trim();
+if(!num)return;
+S.cur=num;
+const p=S.players[num];
+const st=document.getElementById('eval-st');
+const nm=document.getElementById('inp-name');
+const nameRow=document.getElementById('name-row');
+
+document.querySelectorAll('.rg-btn').forEach(b=>{
+b.className='rg-btn'+(b.classList.contains('na-btn')?' na-btn':'');
+});
+document.getElementById('tog-p').className='tog';
+document.getElementById('tog-c').className='tog';
+document.getElementById('inp-notes').value='';
+document.getElementById('notes-wrap').classList.remove('show');
+document.getElementById('notes-toggle').style.display='';
+document.getElementById('next-bar').classList.remove('show');
+document.getElementById('btn-save').style.display='';
+document.querySelectorAll('.guide-popup').forEach(g=>g.classList.remove('show'));
+
+if(p){
+st.textContent='Editing #'+num+(p.name?' — '+p.name:'');
+st.className='status st-edit';
+nm.value=p.name||'';
+CATS.forEach(c=>{
+const v=p.ratings?.[c.key];
+if(v){
+document.querySelectorAll(`.rg-btn[data-ck="${c.key}"]`).forEach(b=>{
+const bv=parseInt(b.dataset.v);
+if(bv===v){
+if(v===-1)b.classList.add('sel-na');
+else b.classList.add('sel-'+v);
+}
+});
+}});
+if(p.pitcher)document.getElementById('tog-p').className='tog on-p';
+if(p.catcher)document.getElementById('tog-c').className='tog on-c';
+if(p.notes){
+document.getElementById('inp-notes').value=p.notes;
+document.getElementById('notes-wrap').classList.add('show');
+document.getElementById('notes-toggle').style.display='none';
+}
+}else{
+st.textContent='New Player #'+num;
+st.className='status st-new';
+nm.value='';
+}
+
+st.style.display='block';
+nameRow.style.display='';
+document.getElementById('eval-form').style.display='block';
+document.getElementById('eval-empty').style.display='none';
+showSmartTip();
+document.getElementById('inp-num').blur();
+}
+
+function saveEval(){
+if(!S.cur)return;
+const num=S.cur;
+const ratings={};
+CATS.forEach(c=>{
+const sel=document.querySelector(`.rg-btn[data-ck="${c.key}"][class*="sel-"]`);
+if(sel)ratings[c.key]=parseInt(sel.dataset.v);
+});
+const ex=S.players[num]||{};
+S.players[num]={...ex,number:num,
+name:document.getElementById('inp-name').value.trim(),
+ratings,
+pitcher:document.getElementById('tog-p').classList.contains('on-p'),
+catcher:document.getElementById('tog-c').classList.contains('on-c'),
+notes:document.getElementById('inp-notes').value.trim(),
+drafted:ex.drafted||false,myTeam:ex.myTeam||false
+};
+save();
+
+const st=document.getElementById('eval-st');
+st.textContent='#'+num+' saved!';
+st.className='status st-saved';
+toast('#'+num+' saved!');
+
+showPostSaveInsight(num);
+
+document.getElementById('next-bar').classList.add('show');
+document.getElementById('btn-save').style.display='none';
+}
+
+function showPostSaveInsight(num){
+const p=S.players[num];
+const sc=calcScore(p);
+const all=Object.values(S.players).filter(x=>calcScore(x)>0);
+if(sc<=0||all.length<2)return;
+
+const box=document.getElementById('smart-tip');
+const tips=[];
+
+const sorted=[...all].sort((a,b)=>calcScore(b)-calcScore(a));
+const rank=sorted.findIndex(x=>x.number===num)+1;
+const t=tier(sc);
+tips.push({t:'ins-info',i:'📊',m:`<strong>#${num} → ${t.l} (${sc.toFixed(1)})</strong> · Ranked #${rank} of ${all.length} players evaluated`});
+
+if(p.ratings){
+const rated=CATS.filter(c=>p.ratings[c.key]&&p.ratings[c.key]>0);
+if(rated.length>=3){
+const best=rated.reduce((a,b)=>p.ratings[a.key]>=p.ratings[b.key]?a:b);
+const worst=rated.reduce((a,b)=>p.ratings[a.key]<=p.ratings[b.key]?a:b);
+if(p.ratings[best.key]!==p.ratings[worst.key]){
+let str=`<strong>Strongest:</strong> ${best.label} (${p.ratings[best.key]}) · <strong>Weakest:</strong> ${worst.label} (${p.ratings[worst.key]})`;
+if(all.length>=5){
+const bestAvg=all.map(x=>x.ratings?.[best.key]).filter(v=>v&&v>0);
+const worstAvg=all.map(x=>x.ratings?.[worst.key]).filter(v=>v&&v>0);
+if(bestAvg.length>=3){
+const bAvg=(bestAvg.reduce((a,b)=>a+b,0)/bestAvg.length);
+if(p.ratings[best.key]>bAvg+0.8)str+=` · ${best.label} is well above avg (${bAvg.toFixed(1)})`;
+}
+if(worstAvg.length>=3){
+const wAvg=(worstAvg.reduce((a,b)=>a+b,0)/worstAvg.length);
+if(p.ratings[worst.key]<wAvg-0.8)str+=` · ${worst.label} is well below avg (${wAvg.toFixed(1)})`;
+}
+}
+tips.push({t:'ins-tip',i:'💡',m:str});
+}
+}
+}
+
+const pitchers=all.filter(x=>x.pitcher).length;
+const catchers=all.filter(x=>x.catcher).length;
+if(p.pitcher)tips.push({t:'ins-good',i:'🔴',m:`<strong>Pitcher!</strong> You've found ${pitchers} pitcher${pitchers!==1?'s':''} so far.`});
+if(p.catcher)tips.push({t:'ins-good',i:'🔵',m:`<strong>Catcher!</strong> You've found ${catchers} catcher${catchers!==1?'s':''} so far.`});
+
+const conf=calcConfidence(p);
+if(conf.missing.length>0){
+tips.push({t:'ins-warn',i:'⚠️',m:`<strong>Incomplete:</strong> Missing ${conf.missing.join(', ')}. You can come back to finish later.`});
+}
+
+box.innerHTML=tips.map(t=>`<div class="ins ${t.t}"><span class="ii">${t.i}</span><div>${t.m}</div></div>`).join('');
+box.style.display='block';
+}
+
+function nextPlayer(){
+S.cur=null;
+document.getElementById('inp-num').value='';
+document.getElementById('inp-name').value='';
+document.getElementById('name-row').style.display='none';
+document.getElementById('inp-notes').value='';
+document.getElementById('notes-wrap').classList.remove('show');
+document.getElementById('notes-toggle').style.display='';
+document.querySelectorAll('.rg-btn').forEach(b=>{
+b.className='rg-btn'+(b.classList.contains('na-btn')?' na-btn':'');
+});
+document.querySelectorAll('.guide-popup').forEach(g=>g.classList.remove('show'));
+document.getElementById('tog-p').className='tog';
+document.getElementById('tog-c').className='tog';
+document.getElementById('eval-form').style.display='none';
+document.getElementById('eval-empty').style.display='block';
+document.getElementById('smart-tip').style.display='none';
+document.getElementById('next-bar').classList.remove('show');
+document.getElementById('btn-save').style.display='';
+document.getElementById('eval-st').style.display='none';
+
+document.getElementById('eval-scroll').scrollTop=0;
+setTimeout(()=>document.getElementById('inp-num').focus(),100);
+}
+
+function delCurrent(){
+if(!S.cur)return;
+if(!confirm('Delete Player #'+S.cur+'?'))return;
+delete S.players[S.cur];save();
+S.cur=null;
+document.getElementById('eval-form').style.display='none';
+document.getElementById('eval-empty').style.display='block';
+document.getElementById('eval-st').style.display='none';
+document.getElementById('name-row').style.display='none';
+document.getElementById('inp-name').value='';
+document.getElementById('inp-num').value='';
+document.getElementById('next-bar').classList.remove('show');
+document.getElementById('btn-save').style.display='';
+toast('Deleted');
+}
+
+function showSmartTip(){
+const box=document.getElementById('smart-tip');
+const all=Object.values(S.players);
+const ct=all.length;
+
+if(ct===0){
+box.innerHTML=`<div class="ins ins-tip"><span class="ii">💡</span><div><strong>First player!</strong> Tap <strong>?</strong> next to any category for grading tips. Go with your gut — you can always edit later.</div></div>`;
+box.style.display='block';return;
+}
+
+const tips=[];
+
+if(S.cur&&S.players[S.cur]){
+const cur=S.players[S.cur];
+const cs=calcScore(cur);
+if(cs>0){
+const scored=all.filter(p=>calcScore(p)>0).sort((a,b)=>calcScore(b)-calcScore(a));
+const rank=scored.findIndex(p=>p.number===S.cur)+1;
+const t=tier(cs);
+tips.push({t:'ins-info',i:'📊',m:`<strong>Current: ${t.l} (${cs.toFixed(1)})</strong> · #${rank} of ${scored.length}`});
+}}
+
+if(ct>=5){
+CATS.forEach(cat=>{
+const vals=all.map(p=>p.ratings?.[cat.key]).filter(v=>v&&v>0);
+if(vals.length<4)return;
+const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+const range=Math.max(...vals)-Math.min(...vals);
+if(range<=1)tips.push({t:'ins-warn',i:'⚠️',m:`<strong>${cat.label}:</strong> All ${Math.min(...vals)}-${Math.max(...vals)}. Try to differentiate more — there should be a spread.`});
+else if(avg>4.0)tips.push({t:'ins-warn',i:'📈',m:`<strong>${cat.label} avg is ${avg.toFixed(1)}</strong> — that's high. Remember 3 = average. Save 5 for the best you've seen today.`});
+else if(avg<2.0)tips.push({t:'ins-warn',i:'📉',m:`<strong>${cat.label} avg is ${avg.toFixed(1)}</strong> — that's low. 3 = average for the age group.`});
+});
+}
+
+if(ct>=3&&ct<10&&tips.length===0){
+tips.push({t:'ins-tip',i:'💡',m:`<strong>${ct} players done.</strong> Your scale will feel more natural after ~10. Don't overthink it — you can edit anyone later.`});
+}
+if(ct>=10&&tips.length===0){
+const scored=all.filter(p=>calcScore(p)>0);
+const avg=scored.length>0?(scored.reduce((s,p)=>s+calcScore(p),0)/scored.length):0;
+const pitchers=all.filter(p=>p.pitcher).length;
+const catchers=all.filter(p=>p.catcher).length;
+const inc=all.filter(p=>calcConfidence(p).missing.length>0).length;
+let msg=`<strong>${ct} players evaluated</strong> · Avg: ${avg.toFixed(1)}`;
+if(pitchers>0||catchers>0)msg+=` · ${pitchers}P / ${catchers}C found`;
+if(inc>0)msg+=` · <span style="color:var(--bad)">${inc} incomplete</span>`;
+tips.push({t:'ins-good',i:'✅',m:msg});
+}
+
+if(tips.length>0){
+box.innerHTML=tips.map(t=>`<div class="ins ${t.t}"><span class="ii">${t.i}</span><div>${t.m}</div></div>`).join('');
+box.style.display='block';
+}else box.style.display='none';
+}
+
+// ============ PLAYERS PAGE ============
+function renderPlayers(){
+const all=Object.values(S.players);
+
+const calDiv=document.getElementById('cal-ins');
+if(all.length>=3){
+const scored=all.filter(p=>calcScore(p)>0);
+const avg=scored.length>0?(scored.reduce((s,p)=>s+calcScore(p),0)/scored.length):0;
+const pitchers=all.filter(p=>p.pitcher).length;
+const catchers=all.filter(p=>p.catcher).length;
+const inc=all.filter(p=>calcConfidence(p).missing.length>0).length;
+const elites=scored.filter(p=>calcScore(p)>=4.3).length;
+const aboveAvg=scored.filter(p=>calcScore(p)>=3.5&&calcScore(p)<4.3).length;
+
+let html=`<div class="ins ins-info"><span class="ii">📊</span><div>
+<strong>${all.length} players</strong> · Avg: ${avg.toFixed(1)}`;
+if(elites>0)html+=` · ${elites} elite`;
+if(aboveAvg>0)html+=` · ${aboveAvg} above avg`;
+html+=`<br>🔴 ${pitchers} pitchers · 🔵 ${catchers} catchers`;
+if(inc>0)html+=` · <strong style="color:var(--bad)">${inc} incomplete</strong>`;
+html+=`</div></div>`;
+calDiv.innerHTML=html;
+calDiv.style.display='block';
+}else calDiv.style.display='none';
+
+const sOpts=[{k:'score',l:'Overall'},{k:'number',l:'Jersey #'},{k:'missing',l:'Most Missing'},{k:'confidence',l:'Confidence'},
+...CATS.map(c=>({k:c.key,l:c.label.split('/')[0].split(' ')[0]}))];
+document.getElementById('sort-ch').innerHTML=sOpts.map(o=>
+`<button class="chip ${S.sort===o.k?'on':''}" data-sk="${o.k}" type="button">${o.l}</button>`).join('');
+
+const fOpts=[{k:'all',l:'All'},{k:'pitcher',l:'Pitchers'},{k:'catcher',l:'Catchers'},
+{k:'incomplete',l:'Incomplete'}];
+document.getElementById('filt-ch').innerHTML=fOpts.map(o=>
+`<button class="chip ${S.filt===o.k?'on':''}" data-fk="${o.k}" type="button">${o.l}</button>`).join('');
+
+let players=sortList(filtList(all,S.filt),S.sort);
+const list=document.getElementById('plist');
+if(players.length===0){list.innerHTML='<div class="empty"><div class="emo">📋</div><p>No players yet — go evaluate!</p></div>';return}
+
+list.innerHTML=players.map((p,idx)=>{
+const sc=calcScore(p);
+const conf=calcConfidence(p);
+const rng=calcRange(p);
+const t=sc>0?tier(sc):null;
+const badges=[];
+if(p.pitcher)badges.push('<span class="badge b-p">P</span>');
+if(p.catcher)badges.push('<span class="badge b-c">C</span>');
+if(t)badges.push(`<span class="badge ${t.c}">${t.l}</span>`);
+
+let confCls='conf-hi',confLbl=conf.graded+'/'+conf.total;
+if(conf.missing.length>=3){confCls='conf-lo'}
+else if(conf.missing.length>=1){confCls='conf-md'}
+badges.push(`<span class="badge b-conf ${confCls}">${confLbl} rated</span>`);
+
+const pips=CATS.map(c=>{
+const v=p.ratings?.[c.key];
+if(v&&v>0)return`<span class="cat-pip pip-ok">${c.label.charAt(0)}:${v}</span>`;
+if(v===-1)return`<span class="cat-pip pip-na">${c.label.charAt(0)}:NA</span>`;
+return`<span class="cat-pip pip-miss">${c.label.charAt(0)}: —</span>`;
+}).join('');
+
+let rangeHtml='';
+if(sc>0&&conf.missing.length>0){
+const pctLow=Math.round((rng.low/5)*100);
+const pctHigh=Math.round((rng.high/5)*100);
+rangeHtml=`<div class="range-bar"><div class="range-fill" style="left:${pctLow}%;width:${pctHigh-pctLow}%"></div></div>
+<div class="range-txt">Range: ${rng.low} – ${rng.high} · Missing: ${conf.missing.join(', ')}</div>`;
+}
+
+return`<div class="pli" data-ed="${p.number}">
+<div class="pli-top">
+<div class="pnum">${p.number}</div>
+<div class="pli-info"><div class="pli-name">${p.name||'Player #'+p.number}</div></div>
+<div class="pli-score ${sc>0?'':'na'}">${sc>0?sc.toFixed(1):'N/A'}</div>
+</div>
+<div class="pli-cats">${pips}</div>
+<div class="pli-badges">${badges.join(' ')}</div>
+${rangeHtml}
+</div>`;
+}).join('');
+}
+
+// ============ SETTINGS ============
+function renderSettings(){
+const pl=document.getElementById('pre-list');
+if(!S.pre.length)pl.innerHTML='<div style="color:var(--g400);font-size:13px">None yet</div>';
+else pl.innerHTML=S.pre.map((p,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--g100)">
+<div class="pnum" style="width:36px;height:36px;font-size:13px">${p.number}</div>
+<span style="flex:1;font-weight:600">${p.name||'#'+p.number}</span>
+<button class="act-btn a-rm" type="button" data-rmpre="${i}">✕</button>
+</div>`).join('');
+
+const wc=document.getElementById('wt-ctrl');
+wc.innerHTML=CATS.map(c=>{
+const w=S.weights[c.key]||c.dw;
+return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+<span style="flex:1;font-size:14px;font-weight:600">${c.label}</span>
+<button class="adj-btn" type="button" data-wk="${c.key}" data-wd="-5">−</button>
+<span style="width:48px;text-align:center;font-weight:800;font-size:15px">${w}%</span>
+<button class="adj-btn" type="button" data-wk="${c.key}" data-wd="5">+</button>
+</div>`;}).join('');
+const tot=Object.values(S.weights).reduce((a,b)=>a+b,0);
+wc.innerHTML+=`<div style="text-align:right;font-size:12px;color:${tot===100?'var(--ok)':'var(--bad)'};font-weight:700">Total: ${tot}%</div>`;
+}
+
+function addPre(){
+const num=document.getElementById('pre-num').value.trim();
+const nm=document.getElementById('pre-name').value.trim();
+if(!num)return;
+if(S.pre.some(p=>p.number===num)){toast('Already added');return}
+S.pre.push({number:num,name:nm});
+if(!S.players[num])S.players[num]={number:num,name:nm,ratings:{},pitcher:false,catcher:false,notes:'Pre-assigned',drafted:true,myTeam:true};
+else{S.players[num].drafted=true;S.players[num].myTeam=true;if(nm&&!S.players[num].name)S.players[num].name=nm}
+document.getElementById('pre-num').value='';
+document.getElementById('pre-name').value='';
+save();renderSettings();toast(`#${num} pre-assigned!`);
+}
+
+function exportData(){
+const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+const url=URL.createObjectURL(blob);const a=document.createElement('a');
+a.href=url;a.download='softball-'+new Date().toISOString().split('T')[0]+'.json';
+a.click();URL.revokeObjectURL(url);toast('Exported!');
+}
+
+function importData(e){
+const f=e.target.files[0];if(!f)return;
+const r=new FileReader();
+r.onload=function(ev){
+try{S={...S,...JSON.parse(ev.target.result)};save();toast('Imported!');showPg('players')}
+catch(er){toast('Import error!')}};
+r.readAsText(f);e.target.value='';
+}
+
+// ============ EVENT DELEGATION ============
+document.addEventListener('click',function(e){
+const t=e.target;
+
+const nav=t.closest('[data-pg]');
+if(nav)showPg(nav.dataset.pg);
+
+if(t.id==='btn-go'||t.closest('#btn-go'))loadPlayer();
+if(t.id==='btn-save'||t.closest('.save-btn-big'))saveEval();
+if(t.id==='btn-next'||t.closest('#btn-next'))nextPlayer();
+if(t.id==='btn-del'||t.closest('#btn-del'))delCurrent();
+
+if(t.id==='tog-p'||t.closest('#tog-p')){const b=document.getElementById('tog-p');b.classList.toggle('on-p')}
+if(t.id==='tog-c'||t.closest('#tog-c')){const b=document.getElementById('tog-c');b.classList.toggle('on-c')}
+
+if(t.id==='btn-add-note'||t.closest('#btn-add-note')){
+document.getElementById('notes-wrap').classList.add('show');
+document.getElementById('notes-toggle').style.display='none';
+document.getElementById('inp-notes').focus();
+}
+
+const ed=t.closest('[data-ed]');
+if(ed){document.getElementById('inp-num').value=ed.dataset.ed;showPg('eval');loadPlayer()}
+
+const sk=t.closest('[data-sk]');
+if(sk){S.sort=sk.dataset.sk;save();renderPlayers()}
+const fk=t.closest('[data-fk]');
+if(fk){S.filt=fk.dataset.fk;save();renderPlayers()}
+
+if(t.id==='btn-pre'||t.closest('#btn-pre'))addPre();
+const rmpre=t.closest('[data-rmpre]');
+if(rmpre){
+const i=parseInt(rmpre.dataset.rmpre);const p=S.pre[i];
+if(S.players[p.number]){S.players[p.number].drafted=false;S.players[p.number].myTeam=false}
+S.pre.splice(i,1);save();renderSettings();
+}
+const wk=t.closest('[data-wk]');
+if(wk){
+const k=wk.dataset.wk,d=parseInt(wk.dataset.wd);
+const nv=(S.weights[k]||0)+d;
+if(nv>=0&&nv<=100){S.weights[k]=nv;save();renderSettings()}
+}
+
+if(t.id==='btn-exp'||t.closest('#btn-exp'))exportData();
+if(t.id==='btn-imp-t'||t.closest('#btn-imp-t'))document.getElementById('f-imp').click();
+if(t.id==='btn-clr'||t.closest('#btn-clr')){
+if(confirm('Delete ALL data? Cannot undo!')){
+S.players={};S.pre=[];S.dpos=0;S.cur=null;
+CATS.forEach(c=>S.weights[c.key]=c.dw);
+save();showPg('eval');
+document.getElementById('eval-form').style.display='none';
+document.getElementById('eval-empty').style.display='block';
+document.getElementById('eval-st').style.display='none';
+toast('All cleared');
+}}
+});
+
+document.getElementById('f-imp').addEventListener('change',importData);
+document.getElementById('inp-num').addEventListener('keydown',function(e){if(e.key==='Enter')loadPlayer()});
+
+// ============ SERVICE WORKER (offline support) ============
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+// ============ INIT ============
+load();
+buildForm();
+</script>
+</body>
+</html>
