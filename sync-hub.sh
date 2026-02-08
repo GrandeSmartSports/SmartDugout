@@ -13,10 +13,10 @@
 #   OWNER_NOTES.md, SETUP_DEV.md, SETUP_OPI.md
 #
 # Special handling:
-#   TASKS.md    — Both Alex and Dev update this. Script shows diff
-#                 and asks before overwriting.
-#   DASHBOARD.html — Repo has custom version. Alex's template is
-#                    skipped unless --force is used.
+#   TASKS.md       — Both Alex and Dev update this. Script shows diff
+#                    and asks before overwriting.
+#   DASHBOARD.html — Alex's project management dashboard (synced).
+#   dashboard.html — Dev's command center (NOT synced, Dev-owned).
 # ============================================================
 
 set -e
@@ -71,6 +71,7 @@ ALEX_FILES=(
   "OWNER_NOTES.md"
   "SETUP_DEV.md"
   "SETUP_OPI.md"
+  "DASHBOARD.html"
 )
 
 # Track what changed
@@ -141,26 +142,6 @@ if [ -f "$TASKS_SRC" ]; then
   fi
 fi
 
-# Handle DASHBOARD.html (repo has custom version)
-echo ""
-DASH_SRC="$SOURCE_DIR/DASHBOARD.html"
-DASH_DEST="$REPO_DIR/DASHBOARD.html"
-
-if [ -f "$DASH_SRC" ]; then
-  if [ "$FORCE" = true ]; then
-    if [ "$DRY_RUN" = false ]; then
-      cp "$DASH_SRC" "$DASH_DEST"
-      echo -e "  ${GREEN}COPIED${NC} DASHBOARD.html (--force)"
-    else
-      echo -e "  ${BLUE}WOULD COPY${NC} DASHBOARD.html (--force)"
-    fi
-    ((CHANGED++))
-  else
-    echo -e "  ${YELLOW}SKIPPED${NC} DASHBOARD.html — repo has custom version"
-    echo "  (Use --force to overwrite with Alex's template)"
-    ((SKIPPED++))
-  fi
-fi
 
 # Summary
 echo ""

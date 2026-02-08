@@ -29,8 +29,9 @@ How to sync Project Hub files from Alex (Claude Chat) to the GitHub repo.
 | OWNER_NOTES.md | Alex | Always overwritten from source |
 | SETUP_DEV.md | Alex | Always overwritten from source |
 | SETUP_OPI.md | Alex | Always overwritten from source |
+| DASHBOARD.html | Alex | Project management dashboard — always overwritten from source |
 | TASKS.md | Both | Skipped by default — Dev and Alex both edit. Use `--force` to overwrite. |
-| DASHBOARD.html | Dev | Repo has custom version. Alex's template is skipped. Use `--force` to overwrite. |
+| dashboard.html | Dev | Dev's command center — NOT synced (Dev-owned) |
 
 ## Flags
 

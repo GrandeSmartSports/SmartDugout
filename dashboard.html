@@ -1,188 +1,543 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartDugout — Command Center</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Inter', -apple-system, system-ui, sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-    color: #e2e8f0; min-height: 100vh; padding: 32px;
-  }
-  .header {
-    text-align: center; margin-bottom: 32px;
-  }
-  .header h1 {
-    font-size: 36px; font-weight: 900;
-    background: linear-gradient(135deg, #ff6b3d, #ff8a65, #ffb74d);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 4px;
-  }
-  .header .brand { font-size: 13px; color: #64748b; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-  .card {
-    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 24px;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
-  }
-  .card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-  .card h2 { font-size: 14px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .card h2 .icon { font-size: 20px; }
-  a { color: #60a5fa; text-decoration: none; font-weight: 600; }
-  a:hover { color: #93c5fd; text-decoration: underline; }
-  .link-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
-  .link-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; }
-  .link-list .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-green { background: #22c55e; }
-  .dot-blue { background: #3b82f6; }
-  .dot-orange { background: #f97316; }
-  .dot-purple { background: #a855f7; }
-  .dot-gray { background: #64748b; }
-  .status { font-size: 12px; color: #64748b; font-weight: 500; }
-  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .team-member {
-    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px;
-    border: 1px solid rgba(255,255,255,0.06);
-  }
-  .team-member .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
-  .team-member .role { font-size: 11px; color: #64748b; }
-  .quick-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.05); color: #e2e8f0;
-    font-size: 13px; font-weight: 600; cursor: pointer;
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-  .quick-btn:hover { background: rgba(255,255,255,0.1); text-decoration: none; color: white; }
-  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
-  .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
-  .stat-row:last-child { border-bottom: none; }
-  .stat-val { font-weight: 800; color: #ff6b3d; }
-  .phase { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
-  .phase:last-child { border-bottom: none; }
-  .phase .label { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-  .phase .desc { font-size: 12px; color: #64748b; }
-  .phase .tag {
-    display: inline-block; font-size: 10px; font-weight: 700;
-    padding: 2px 8px; border-radius: 4px; margin-top: 4px;
-  }
-  .tag-active { background: rgba(34,197,94,0.15); color: #22c55e; }
-  .tag-next { background: rgba(59,130,246,0.15); color: #60a5fa; }
-  .tag-future { background: rgba(100,116,139,0.15); color: #94a3b8; }
-  .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #475569; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #718096;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .team-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .team-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+        }
+
+        .team-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .team-card .role {
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .team-card .location {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .content-section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            color: #718096;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .task-item, .decision-item {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        .task-item.priority-high {
+            border-left-color: #f56565;
+        }
+
+        .task-item.priority-medium {
+            border-left-color: #ed8936;
+        }
+
+        .task-item.priority-low {
+            border-left-color: #48bb78;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.1em;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge.todo {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .badge.in-progress {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+
+        .badge.done {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .vision-content {
+            line-height: 1.8;
+            color: #4a5568;
+        }
+
+        .vision-content h3 {
+            color: #2d3748;
+            margin: 20px 0 10px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .decision-date {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .decision-title {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .decision-content {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏠 Project Command Center</h1>
+            <p>Last updated: <span id="lastUpdate">February 07, 2026</span></p>
+        </div>
 
-<div class="header">
-  <div class="brand">GrandeSmartSports</div>
-  <h1>SmartDugout Command Center</h1>
-</div>
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Active Tasks</h3>
+                <div class="number" id="activeTasks">5</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed Tasks</h3>
+                <div class="number" id="completedTasks">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Decisions Made</h3>
+                <div class="number" id="decisionsCount">6</div>
+            </div>
+            <div class="stat-card">
+                <h3>Project Phase</h3>
+                <div class="number" style="font-size: 1.5em;">Foundation</div>
+            </div>
+        </div>
 
-<div class="grid">
+        <!-- Team Section -->
+        <div class="team-section">
+            <h2>👥 Your Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <h3>💬 Alex</h3>
+                    <div class="role">Strategy & Planning Lead</div>
+                    <div class="location">📍 claude.ai Chat</div>
+                    <div class="location" style="margin-top: 10px; background: rgba(76, 175, 80, 0.3);">🟢 Available</div>
+                </div>
+                <div class="team-card">
+                    <h3>💻 Dev</h3>
+                    <div class="role">Lead Developer</div>
+                    <div class="location">📍 GitHub Repository</div>
+                    <div class="location" style="margin-top: 10px; background: rgba(76, 175, 80, 0.3);">🟢 Available</div>
+                </div>
+                <div class="team-card">
+                    <h3>📁 Opi</h3>
+                    <div class="role">Operations Manager</div>
+                    <div class="location">📍 Google Drive</div>
+                    <div class="location" style="margin-top: 10px; background: rgba(76, 175, 80, 0.3);">🟢 Available</div>
+                </div>
+            </div>
+            <p style="margin-top: 20px; color: #718096; font-size: 0.9em;">
+                <strong>Status Legend:</strong> 🟢 Available | 🟡 On Break (token limit) | 🔴 Offline
+            </p>
+        </div>
 
-  <div class="card">
-    <h2><span class="icon">🔗</span> Quick Links</h2>
-    <ul class="link-list">
-      <li><span class="dot dot-green"></span><a href="https://softball-eval.surge.sh" target="_blank">Live App — softball-eval.surge.sh</a></li>
-      <li><span class="dot dot-blue"></span><a href="https://github.com/GrandeSmartSports/SmartDugout" target="_blank">GitHub Repo</a></li>
-      <li><span class="dot dot-orange"></span><a href="https://github.com/GrandeSmartSports" target="_blank">GrandeSmartSports GitHub</a></li>
-      <li><span class="dot dot-purple"></span><a href="https://claude.ai" target="_blank">Claude Chat (Alex)</a></li>
-    </ul>
-    <div class="actions" style="margin-top:16px">
-      <a class="quick-btn" href="https://softball-eval.surge.sh" target="_blank">🥎 Open App</a>
-      <a class="quick-btn" href="https://github.com/GrandeSmartSports/SmartDugout/issues" target="_blank">📋 Issues</a>
+        <!-- Main Content Tabs -->
+        <div class="content-section">
+            <h2>📊 Project Overview</h2>
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('vision')">Vision</button>
+                <button class="tab" onclick="switchTab('tasks')">Tasks</button>
+                <button class="tab" onclick="switchTab('decisions')">Decisions</button>
+            </div>
+
+            <!-- Vision Tab -->
+            <div id="vision" class="tab-content active">
+                <div class="vision-content">
+                    <h3>🎯 What We're Building</h3>
+                    <p><em>Vision details to be defined...</em></p>
+                    
+                    <h3>🗺️ Current Roadmap</h3>
+                    <p><strong>Phase 1: Foundation (Current)</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 2;">
+                        <li>Set up development environment</li>
+                        <li>Create project structure</li>
+                        <li>Define core features</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tasks Tab -->
+            <div id="tasks" class="tab-content">
+                <h3 style="margin-bottom: 20px; color: #e53e3e;">🔴 High Priority</h3>
+                
+                <div class="task-item priority-high">
+                    <div class="task-header">
+                        <div class="task-title">T001: Upload Project Hub files to GitHub repo root</div>
+                        <span class="badge todo">TODO</span>
+                    </div>
+                    <div class="task-meta">
+                        <span>👤 Assigned to: Dev</span>
+                        <span>📅 Due: ASAP</span>
+                    </div>
+                </div>
+
+                <div class="task-item priority-high">
+                    <div class="task-header">
+                        <div class="task-title">T002: Upload Project Hub files to Google Drive</div>
+                        <span class="badge todo">TODO</span>
+                    </div>
+                    <div class="task-meta">
+                        <span>👤 Assigned to: Opi</span>
+                        <span>📅 Due: ASAP</span>
+                    </div>
+                </div>
+
+                <div class="task-item priority-high">
+                    <div class="task-header">
+                        <div class="task-title">T003: Define project vision and goals</div>
+                        <span class="badge todo">TODO</span>
+                    </div>
+                    <div class="task-meta">
+                        <span>👤 Assigned to: Owner + Alex</span>
+                        <span>📅 Due: This week</span>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px 0; color: #ed8936;">🟡 Medium Priority</h3>
+                
+                <div class="task-item priority-medium">
+                    <div class="task-header">
+                        <div class="task-title">T004: Set up dedicated Mac Space/Desktop for project workspace</div>
+                        <span class="badge todo">TODO</span>
+                    </div>
+                    <div class="task-meta">
+                        <span>👤 Assigned to: Dev</span>
+                        <span>📅 Due: This week</span>
+                    </div>
+                </div>
+
+                <div class="task-item priority-medium">
+                    <div class="task-header">
+                        <div class="task-title">T005: Create desktop shortcuts and organize dashboard access</div>
+                        <span class="badge todo">TODO</span>
+                    </div>
+                    <div class="task-meta">
+                        <span>👤 Assigned to: Opi</span>
+                        <span>📅 Due: This week</span>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px 0; color: #48bb78;">🟢 Low Priority</h3>
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No low priority tasks yet</p>
+                </div>
+            </div>
+
+            <!-- Decisions Tab -->
+            <div id="decisions" class="tab-content">
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#006: Role Clarity - Strategy vs Execution</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Team Structure & Authority</p>
+                        <p><strong>Decision:</strong> Owner + Alex handle ALL strategy and planning. Dev and Opi are execution-only - read tasks, do work, ask questions when blocked, update progress. No strategy participation.</p>
+                        <p><strong>Why:</strong> Owner wants strategic partner (Alex) without committee discussions. Clear boundaries prevent confusion.</p>
+                        <p><strong>Impact:</strong> Clear authority structure, faster decisions, Dev/Opi focus on execution only.</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#005: Alex as Single Point of Contact</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Workflow & Team Coordination</p>
+                        <p><strong>Decision:</strong> Owner brings ALL requests to Alex first. Alex assesses, assigns to best team member, updates TASKS.md. Owner then executes with assigned team members.</p>
+                        <p><strong>Why:</strong> Owner shouldn't figure out which tool is best. Alex has context to distribute work efficiently.</p>
+                        <p><strong>Impact:</strong> Single communication point, automatic task distribution, proper scoping before execution.</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#004: Communication Standards & Break Tracking</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Team Coordination</p>
+                        <p><strong>Decision:</strong> Standardized commands ("Review the Project Hub", "Update the board", "[Name] is on break"). Owner is the communication bridge between team members.</p>
+                        <p><strong>Why:</strong> Consistency reduces confusion. Team members can't directly communicate - owner relays messages and we coordinate through hub files.</p>
+                        <p><strong>Impact:</strong> Clear command vocabulary, visible break status, async coordination through Project Hub.</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#003: Team Member Names & Dashboard</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Project Management & UX</p>
+                        <p><strong>Decision:</strong> Assigned names to team members (Alex, Dev, Opi) and created a visual dashboard for clean project overview. "Opi" clearly connects to Operations Manager.</p>
+                        <p><strong>Why:</strong> Real names make delegation natural and personal. Dashboard provides beautiful status view without markdown files or code editors.</p>
+                        <p><strong>Impact:</strong> More natural team communication, clean visual dashboard for quick status checks, no need to open code editors.</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#002: Owner-Delegate Workflow</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Process Management</p>
+                        <p><strong>Decision:</strong> Implemented a hands-off documentation system where the owner only gives two commands: "Review the Project Hub" to start sessions and "Update our Project Hub with what we discussed" to end them.</p>
+                        <p><strong>Why:</strong> The owner shouldn't be managing employee workspaces. Just like in a real business, the owner directs and the team executes.</p>
+                        <p><strong>Impact:</strong> Owner workload reduced to just two commands, Claude instances fully autonomous in documentation.</p>
+                    </div>
+                </div>
+
+                <div class="decision-item">
+                    <div class="decision-date">📅 February 07, 2026</div>
+                    <div class="decision-title">#001: Project Hub Structure</div>
+                    <div class="decision-content">
+                        <p><strong>Category:</strong> Project Management</p>
+                        <p><strong>Decision:</strong> Created a centralized project hub system with three core documents (VISION, TASKS, DECISIONS) that sync across all three workspaces.</p>
+                        <p><strong>Why:</strong> To solve the communication fragmentation problem where the same information had to be explained three times.</p>
+                        <p><strong>Impact:</strong> Single source of truth across all workspaces, easier onboarding for each Claude instance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="refresh-btn" onclick="location.reload()">🔄 Refresh Dashboard</button>
+        </div>
     </div>
-  </div>
 
-  <div class="card">
-    <h2><span class="icon">👥</span> The Team</h2>
-    <div class="team-grid">
-      <div class="team-member">
-        <div class="name">Daniel</div>
-        <div class="role">Owner · Direction · Decisions</div>
-      </div>
-      <div class="team-member">
-        <div class="name">CC (Dev)</div>
-        <div class="role">Claude Code · Build · Deploy</div>
-      </div>
-      <div class="team-member">
-        <div class="name">Alex</div>
-        <div class="role">Claude Chat · Strategy · Planning</div>
-      </div>
-      <div class="team-member">
-        <div class="name">CW</div>
-        <div class="role">CoWork · Files · Automation</div>
-      </div>
-    </div>
-  </div>
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
 
-  <div class="card">
-    <h2><span class="icon">📊</span> Project Status</h2>
-    <div class="stat-row"><span>MVP</span><span class="stat-val">LIVE</span></div>
-    <div class="stat-row"><span>GitHub Repo</span><span class="stat-val">SET UP</span></div>
-    <div class="stat-row"><span>Domain</span><span class="stat-val">PURCHASED</span></div>
-    <div class="stat-row"><span>Brand</span><span class="stat-val">GrandeSmartSports</span></div>
-    <div class="stat-row"><span>Research</span><span style="color:#f59e0b;font-weight:700">PENDING</span></div>
-    <div class="stat-row"><span>Business Plan</span><span style="color:#f59e0b;font-weight:700">PENDING</span></div>
-  </div>
-
-  <div class="card">
-    <h2><span class="icon">🗺️</span> Roadmap</h2>
-    <div class="phase">
-      <div class="label">Phase 1 — MVP</div>
-      <div class="desc">Softball eval tool for tryouts</div>
-      <span class="tag tag-active">ACTIVE</span>
-    </div>
-    <div class="phase">
-      <div class="label">Phase 2 — Smart Features</div>
-      <div class="desc">AI coaching insights, drill recs, position suggestions</div>
-      <span class="tag tag-next">NEXT</span>
-    </div>
-    <div class="phase">
-      <div class="label">Phase 3 — Multi-Sport</div>
-      <div class="desc">SmartSideline (soccer), SmartBench (basketball)</div>
-      <span class="tag tag-future">FUTURE</span>
-    </div>
-    <div class="phase">
-      <div class="label">Phase 4 — Scale</div>
-      <div class="desc">Subscriptions, league partnerships, App Store</div>
-      <span class="tag tag-future">FUTURE</span>
-    </div>
-  </div>
-
-  <div class="card" style="grid-column: span 2">
-    <h2><span class="icon">🥎</span> App Family</h2>
-    <div style="display:flex;gap:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:150px;background:rgba(255,107,61,0.1);border:1px solid rgba(255,107,61,0.2);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px">🥎</div>
-        <div style="font-weight:800;font-size:15px;color:#ff6b3d">SmartDugout</div>
-        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Softball</div>
-        <span class="tag tag-active" style="margin-top:8px">ACTIVE</span>
-      </div>
-      <div style="flex:1;min-width:150px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px">⚽</div>
-        <div style="font-weight:800;font-size:15px;color:#3b82f6">SmartSideline</div>
-        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Soccer</div>
-        <span class="tag tag-future" style="margin-top:8px">PLANNED</span>
-      </div>
-      <div style="flex:1;min-width:150px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:32px;margin-bottom:8px">🏀</div>
-        <div style="font-weight:800;font-size:15px;color:#a855f7">SmartBench</div>
-        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Basketball</div>
-        <span class="tag tag-future" style="margin-top:8px">PLANNED</span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<div class="footer">GrandeSmartSports · grandesmartsports.com · Built with AI</div>
-
+        // Update last update time
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+    </script>
 </body>
 </html>
