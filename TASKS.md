@@ -1,6 +1,6 @@
 # ✅ TASKS - Project Task Management
 
-**Last Updated:** February 07, 2026
+**Last Updated:** February 08, 2026
 
 ---
 
@@ -20,6 +20,9 @@
 | T001 | Upload Project Hub files to GitHub repo root | Dev | 🟢 DONE | Feb 7 |
 | T002 | Upload Project Hub files to Google Drive project folder | Opi | 🔵 TODO | ASAP |
 | T003 | Define project vision and goals | Owner + Alex | 🔵 TODO | This week |
+| T006 | GitHub Hub Maintenance — repeatable sync process | Dev | 🟢 DONE | Feb 8 |
+| T007 | Automated Dashboard Sync | Dev | 🟢 DONE | Feb 8 |
+| T008 | Development Workflow Setup — DEV_WORKFLOW.md + dev scripts | Dev | 🟢 DONE | Feb 8 |
 
 ---
 
@@ -54,6 +57,9 @@
 |----|------|--------|--------------|-------|
 | T001 | Upload Project Hub files to GitHub repo root | 🟢 DONE | - | Completed Feb 7 — all hub files in repo |
 | T004 | Set up dedicated Mac Space/Desktop for project workspace | ⚪ ON HOLD | - | Owner deferred — not a priority right now |
+| T006 | GitHub Hub Maintenance — sync-hub.sh created and tested | 🟢 DONE | - | Repeatable script to sync Alex's files to repo. See HUB_SYNC.md |
+| T007 | Automated Dashboard Sync | 🟢 DONE | - | DASHBOARD.html now auto-syncs from Alex via sync-hub.sh |
+| T008 | Dev Workflow Setup — DEV_WORKFLOW.md + dev.sh | 🟢 DONE | - | Full dev docs + helper script with serve/deploy/sync/status commands |
 
 ---
 
@@ -70,7 +76,10 @@
 
 | ID | Task | Completed By | Date | Outcome |
 |----|------|--------------|------|---------|
-| - | No completed tasks yet | - | - | - |
+| T001 | Upload Project Hub files to GitHub repo root | Dev | Feb 7 | All hub files committed and pushed |
+| T006 | GitHub Hub Maintenance | Dev | Feb 8 | sync-hub.sh script + HUB_SYNC.md docs |
+| T007 | Automated Dashboard Sync | Dev | Feb 8 | DASHBOARD.html added to sync pipeline |
+| T008 | Dev Workflow Setup | Dev | Feb 8 | DEV_WORKFLOW.md + dev.sh helper script |
 
 ---
 
