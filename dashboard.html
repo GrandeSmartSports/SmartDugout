@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartDugout — Command Center</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+    color: #e2e8f0; min-height: 100vh; padding: 32px;
+  }
+  .header {
+    text-align: center; margin-bottom: 32px;
+  }
+  .header h1 {
+    font-size: 36px; font-weight: 900;
+    background: linear-gradient(135deg, #ff6b3d, #ff8a65, #ffb74d);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .header .brand { font-size: 13px; color: #64748b; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+  .card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 24px;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+  }
+  .card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+  .card h2 { font-size: 14px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .icon { font-size: 20px; }
+  a { color: #60a5fa; text-decoration: none; font-weight: 600; }
+  a:hover { color: #93c5fd; text-decoration: underline; }
+  .link-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .link-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .link-list .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: #22c55e; }
+  .dot-blue { background: #3b82f6; }
+  .dot-orange { background: #f97316; }
+  .dot-purple { background: #a855f7; }
+  .dot-gray { background: #64748b; }
+  .status { font-size: 12px; color: #64748b; font-weight: 500; }
+  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .team-member {
+    background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .team-member .name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+  .team-member .role { font-size: 11px; color: #64748b; }
+  .quick-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05); color: #e2e8f0;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .quick-btn:hover { background: rgba(255,255,255,0.1); text-decoration: none; color: white; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 14px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-val { font-weight: 800; color: #ff6b3d; }
+  .phase { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .phase:last-child { border-bottom: none; }
+  .phase .label { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+  .phase .desc { font-size: 12px; color: #64748b; }
+  .phase .tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; margin-top: 4px;
+  }
+  .tag-active { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-next { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .tag-future { background: rgba(100,116,139,0.15); color: #94a3b8; }
+  .footer { text-align: center; margin-top: 32px; font-size: 12px; color: #475569; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">GrandeSmartSports</div>
+  <h1>SmartDugout Command Center</h1>
+</div>
+
+<div class="grid">
+
+  <div class="card">
+    <h2><span class="icon">🔗</span> Quick Links</h2>
+    <ul class="link-list">
+      <li><span class="dot dot-green"></span><a href="https://softball-eval.surge.sh" target="_blank">Live App — softball-eval.surge.sh</a></li>
+      <li><span class="dot dot-blue"></span><a href="https://github.com/GrandeSmartSports/SmartDugout" target="_blank">GitHub Repo</a></li>
+      <li><span class="dot dot-orange"></span><a href="https://github.com/GrandeSmartSports" target="_blank">GrandeSmartSports GitHub</a></li>
+      <li><span class="dot dot-purple"></span><a href="https://claude.ai" target="_blank">Claude Chat (Alex)</a></li>
+    </ul>
+    <div class="actions" style="margin-top:16px">
+      <a class="quick-btn" href="https://softball-eval.surge.sh" target="_blank">🥎 Open App</a>
+      <a class="quick-btn" href="https://github.com/GrandeSmartSports/SmartDugout/issues" target="_blank">📋 Issues</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">👥</span> The Team</h2>
+    <div class="team-grid">
+      <div class="team-member">
+        <div class="name">Daniel</div>
+        <div class="role">Owner · Direction · Decisions</div>
+      </div>
+      <div class="team-member">
+        <div class="name">CC (Dev)</div>
+        <div class="role">Claude Code · Build · Deploy</div>
+      </div>
+      <div class="team-member">
+        <div class="name">Alex</div>
+        <div class="role">Claude Chat · Strategy · Planning</div>
+      </div>
+      <div class="team-member">
+        <div class="name">CW</div>
+        <div class="role">CoWork · Files · Automation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">📊</span> Project Status</h2>
+    <div class="stat-row"><span>MVP</span><span class="stat-val">LIVE</span></div>
+    <div class="stat-row"><span>GitHub Repo</span><span class="stat-val">SET UP</span></div>
+    <div class="stat-row"><span>Domain</span><span class="stat-val">PURCHASED</span></div>
+    <div class="stat-row"><span>Brand</span><span class="stat-val">GrandeSmartSports</span></div>
+    <div class="stat-row"><span>Research</span><span style="color:#f59e0b;font-weight:700">PENDING</span></div>
+    <div class="stat-row"><span>Business Plan</span><span style="color:#f59e0b;font-weight:700">PENDING</span></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon">🗺️</span> Roadmap</h2>
+    <div class="phase">
+      <div class="label">Phase 1 — MVP</div>
+      <div class="desc">Softball eval tool for tryouts</div>
+      <span class="tag tag-active">ACTIVE</span>
+    </div>
+    <div class="phase">
+      <div class="label">Phase 2 — Smart Features</div>
+      <div class="desc">AI coaching insights, drill recs, position suggestions</div>
+      <span class="tag tag-next">NEXT</span>
+    </div>
+    <div class="phase">
+      <div class="label">Phase 3 — Multi-Sport</div>
+      <div class="desc">SmartSideline (soccer), SmartBench (basketball)</div>
+      <span class="tag tag-future">FUTURE</span>
+    </div>
+    <div class="phase">
+      <div class="label">Phase 4 — Scale</div>
+      <div class="desc">Subscriptions, league partnerships, App Store</div>
+      <span class="tag tag-future">FUTURE</span>
+    </div>
+  </div>
+
+  <div class="card" style="grid-column: span 2">
+    <h2><span class="icon">🥎</span> App Family</h2>
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px;background:rgba(255,107,61,0.1);border:1px solid rgba(255,107,61,0.2);border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">🥎</div>
+        <div style="font-weight:800;font-size:15px;color:#ff6b3d">SmartDugout</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Softball</div>
+        <span class="tag tag-active" style="margin-top:8px">ACTIVE</span>
+      </div>
+      <div style="flex:1;min-width:150px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">⚽</div>
+        <div style="font-weight:800;font-size:15px;color:#3b82f6">SmartSideline</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Soccer</div>
+        <span class="tag tag-future" style="margin-top:8px">PLANNED</span>
+      </div>
+      <div style="flex:1;min-width:150px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">🏀</div>
+        <div style="font-weight:800;font-size:15px;color:#a855f7">SmartBench</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:2px">Basketball</div>
+        <span class="tag tag-future" style="margin-top:8px">PLANNED</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">GrandeSmartSports · grandesmartsports.com · Built with AI</div>
+
+</body>
+</html>
